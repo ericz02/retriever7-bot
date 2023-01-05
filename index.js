@@ -19,3 +19,5 @@ client.login(client.config.token).then(() => {
     loadEvents(client)
     loadCommands(client)
 })
+
+module.exports = client
