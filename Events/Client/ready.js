@@ -15,7 +15,7 @@ module.exports = {
                 console.log('MongoDB connection successful.')
             }
 
-            console.log(`${client.user.username}`)
+            console.log(`${client.user.username} is now online.`)
         }
         catch (error) {
             console.log(`Error ${error}`)
