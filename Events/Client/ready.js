@@ -1,19 +1,24 @@
-const {Client} = require('discord.js');
-const mongoose = require('mongoose');
-const config = require("../../config.json");
+const {Client} = require('discord.js')
+const mongoose = require('mongoose')
+const config = require('../../config.json')
 
 module.exports = {
-    name: "ready",
+    name: 'ready',
     once: true,
+
     async execute(client) {
-        await mongoose.connect(config.mongodb || '', {
-            keepAlive: true,
-        });
+        try {
+            mongoose.set('strictQuery', false);
+            await mongoose.connect(config.mongodb)
 
-        if (mongoose.connect) {
-            console.log('MongoDB connection succesful.')
+            if (mongoose.connect) {
+                console.log('MongoDB connection successful.')
+            }
+
+            console.log(`${client.user.username}`)
         }
-
-        console.log(`${client.user.username} is now online.`);
-    },
-};
+        catch (error) {
+            console.log(`Error ${error}`)
+        }
+    }
+}
