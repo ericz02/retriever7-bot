@@ -1,43 +1,64 @@
-// const { Client, SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
+const { Client, SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
+const ms = require("ms");
 
-// module.exports = {
-//     data: new SlashCommandBuilder()
-//         .setName("unmute")
-//         .setDescription("Unmute a member from the guild")
-//         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
-//         .addUserOption(option =>
-//             option.setName("target")
-//                 .setDescription("Select the user you wish to unmute.")
-//                 .setRequired(true)
-//         ),
-//     async execute(interaction) {
-//         const { guild, options } = interaction;
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName("mute")
+        .setDescription("Mute a member from the guild.")
+        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+        .addUserOption(option =>
+            option.setName("target")
+                .setDescription("Select the user you wish to mute.")
+                .setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("time")
+                .setDescription("How long should the mute last?")
+                .setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason")
+                .setDescription("What is the reason of the mute?")
+        ),
 
-//         const user = options.getUser("target");
-//         const member = guild.members.cache.get(user.id);
+    async execute(interaction) {
+        const { guild, options } = interaction;
 
-//         const errEmbed = new EmbedBuilder()
-//             .setDescription('Something went wrong. Please try again later.')
-//             .setColor(0xc72c3b)
+        const user = options.getUser("target");
+        const member = guild.members.cache.get(user.id);
+        const time = options.getString("time");
+        const convertedTime = ms(time);
+        const reason = options.getString("reason") || "No reason provided";
 
-//         const succesEmbed = new EmbedBuilder()
-//             .setTitle("**:white_check_mark: Unmuted**")
-//             .setDescription(`Succesfully unmuted ${user}.`)
-//             .setColor(0x5fb041)
-//             .setTimestamp();
+        const errEmbed = new EmbedBuilder()
+            .setDescription('Something went wrong. Please try again later.')
+            .setColor(0xc72c3b)
 
-//         if (member.roles.highest.position >= interaction.member.roles.highest.position)
-//             return interaction.reply({ embeds: [errEmbed], ephemeral: true }); // this if statement is optional (but recommended)
+        const succesEmbed = new EmbedBuilder()
+            .setTitle("**:white_check_mark: Muted**")
+            .setDescription(`Succesfully muted ${user}.`)
+            .addFields(
+                { name: "Reason", value: `${reason}`, inline: true },
+                { name: "Duration", value: `${time}`, inline: true }
+            )
+            .setColor(0x5fb041)
+            .setTimestamp();
 
-//         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers))
-//             return interaction.reply({ embeds: [errEmbed], ephemeral: true });
+        if (member.roles.highest.position >= interaction.member.roles.highest.position)
+            return interaction.reply({ embeds: [errEmbed], ephemeral: true }); // this if statement is optional (but recommended)
 
-//         try {
-//             await member.timeout(null);
+        if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers))
+            return interaction.reply({ embeds: [errEmbed], ephemeral: true });
 
-//             interaction.reply({ embeds: [succesEmbed], ephemeral: true });
-//         } catch (err) {
-//             console.log(err);
-//         }
-//     }
-// }
+        if (!convertedTime)
+            return interaction.reply({ embeds: [errEmbed], ephemeral: true });
+
+        try {
+            await member.timeout(convertedTime, reason);
+
+            interaction.reply({ embeds: [succesEmbed], ephemeral: true });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+}
