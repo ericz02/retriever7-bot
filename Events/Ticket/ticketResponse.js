@@ -9,7 +9,8 @@ const {
 } = require("discord.js");
 
 const ticketSchema = require("../../Models/Ticket");
-const { ticketParent, everyone } = require("../../config.json");
+// const { ticketParent, everyone } = require("../../config.json");
+const { ticketParent, everyone } = require("dotenv").config()
 
 module.exports = {
     name: "interactionCreate",

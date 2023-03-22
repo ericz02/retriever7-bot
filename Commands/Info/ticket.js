@@ -8,7 +8,9 @@ ButtonStyle,
 PermissionFlagsBits,
 } = require("discord.js")
 
-const {openticket} = require("../../config.json")
+// const {openticket} = require("../../config.json")
+const {openticket} = require("dotenv").config()
+
 module.exports = {
     data: new SlashCommandBuilder()
     .setName("ticket")

@@ -5,7 +5,8 @@ const {
 } = require("discord.js")
 
 const {createTranscript} = require("discord-html-transcripts");
-const {transcripts} = require("../../config.json");
+// const {transcripts} = require("../../config.json");
+const {transcript} = require("dotenv").config()
 const ticketSchema = require("../../Models/Ticket");
 
 module.exports = {

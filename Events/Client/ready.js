@@ -1,6 +1,7 @@
 const {Client} = require('discord.js')
 const mongoose = require('mongoose')
-const config = require('../../config.json')
+// const config = require('../../config.json')
+const config = require("dotenv").config()
 
 module.exports = {
     name: 'ready',
